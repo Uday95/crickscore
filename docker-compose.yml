@@ -2,12 +2,16 @@ version: '3.8'
 services:
   redis:
     image: redis:7
+
   mysql:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: cricscore
-    ports: ["3306:3306"]
+    # REMOVE PORTS (important!)
+    # ports:
+    #   - "3306:3306"
+
   app:
     build: ./app
     environment:
@@ -17,10 +21,15 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: rootpass
       MYSQL_DB: cricscore
-    depends_on: [redis,mysql]
+    depends_on:
+      - redis
+      - mysql
+
   nginx:
     image: nginx:1.25
-    ports: ["8080:80"]
+    ports:
+      - "8080:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on: [app]
+    depends_on:
+      - app
